@@ -5,40 +5,57 @@ class JeopardyGrid extends Grid {
         
     }
  
-
- async getData(){
-     const categories = categoryIDs.map(id =>
+    async getData(categoryIDs){
+     const categoryPromises = categoryIDs.map(id =>
             fetch("http://jservice.io/api/categor?id=" + id).then(res => res.json()),
      )
-        const categoryObjects = await Promise.all(categories)
-        this.loopOverCells(categoryObject)
+        const categories = await Promise.all(categoryPromises)
+        this.loopOverCells(categories)
     }
 
     loopOverCells(categories) {
+        let clueIndex = 0;
         for(let rowIndex = 0; rowIndex < this.numberOfRows; rowIndex++) {
-            for (let colIndex = 0; colIndex <this.numberOfColumns; colIndex++) {
-                const currentCategory = categories[colIndex]
-                const currentClue = currentCategory.clues[rowIndex]
-                const currentCell = this.rows[rowIndex] [colIndex]
-                currentCell.addClueToCell(currentClue)
+            for (let colIndex = 0; colIndex < this.numberOfColumns; colIndex++) {
+                const currentCategory = categories[colIndex];
+                let currentClue = currentCategory.clues[clueIndex++];
+                while (!this.validateClue(currentClue)) {
+
+                }
+                currentClue.value = 100  (rowIndex + 1);
+                const currentCell = this.rows[rowIndex][colIndex];
+                currentCell.addClue(currentClue);
             }
         }
     }
 
     onClick (cell) {
-        cell.element.innerHTML = ''
-        const questionElement = document.createElement('div')
-        questionElement.classList.add('question')
-        questionElement.appendChild(document.createTextNode(cell.question))
+        cell.element.innerHTML = '';
+        const questionElement = document.createElement('div');
+        questionElement.classList.add('question');
+        questionElement.appendChild(document.createTextNode(cell.question));
+        cell.element.appendChild(questionElement);
     }
-    
-    
-    addClueToCell (cell, clue) {
-        cell.question = clue.question,
-        cell.answer = clue.answer,
-        cell.pointValue = clue.value || 100,
+}
 
-       
+class JeoparyCell extends Cell {
+    constructor(options) {
+        super(options)
     }
- }
+
+    addClue (clue) {
+        this.question = clue.question || 'n/a';
+        this.answer = clue.answer || 'n/a';
+        this.pointValue = clue.value || 100;
+
+        const valueElement = document.createElement("div");
+        valueElement.classList.add('point-value');
+        valueElement.appendChild(document.createTextNode(this.pointValue));
+        this.element.appendChild(valueElement);
+    }
+}
+
+    
+    
+    
 
