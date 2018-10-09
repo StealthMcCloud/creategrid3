@@ -18,9 +18,9 @@ li {
 
 }
 
-.grid {
+/* .grid {
 
-}
+} */
 
 #answer {
     color: white;
@@ -62,11 +62,4 @@ button {
 }
 #answerBox {
     font-size: 16px;
-}
-
-.point-value {
-
-}
-margin {
-
 }
